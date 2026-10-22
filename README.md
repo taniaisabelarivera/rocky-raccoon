@@ -64,7 +64,8 @@ Emergency preparedness is an important life skill at every age. By making safety
 **Team**
 
 Team Rocky Raccoon — HackGlobal
-Tania Rivera (@taniaisabelarivera)
+
+Tania Rivera (@taniaisabelarivera) \n
 Sophia Beker (@sophiaBeker)
 Valerie Guillen (@Val1066)
 Fionna Reyes (@fionna-reyes)

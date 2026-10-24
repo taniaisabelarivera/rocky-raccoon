@@ -1,71 +1,30 @@
-**Safety Quest — Team Rocky Raccoon**
+# Safety Quest — First Prototype
 
-An AI-powered interactive learning platform that helps children learn how to stay safe during emergencies.
+A lightweight, responsive HTML/CSS/JavaScript demo for Team Rocky Raccoon's HackGlobal project. This prototype explores a child-friendly K–5 emergency-preparedness learning experience guided by Rocky Raccoon.
 
-Team Rocky Raccoon's project for HackGlobal.
+## Run it
 
-**About the Project**
+No build step or package installation is required. Open `index.html` in a modern browser, or serve this folder with a static server (for example, `python -m http.server 8000`) and open `http://localhost:8000`.
 
-Safety Quest is an interactive educational platform designed to teach children about emergency preparedness through engaging, age-appropriate lessons and activities. Initially targeting students in kindergarten through fifth grade (K–5), the platform focuses on helping young learners understand and remember essential safety procedures for emergencies such as earthquakes, fires, fire drills, and shelter-in-place situations.
+## What is included
 
-Emergency instructions can be confusing or intimidating for young children, making safety education difficult to teach and retain. Safety Quest aims to address this challenge by turning essential safety lessons into an approachable, interactive learning experience.
+- Home dashboard with lesson cards, progress, and quest points.
+- Browse/search across six short safety lessons.
+- Interactive two-step lessons with a knowledge check and encouraging feedback.
+- Local browser storage for completed lessons and points.
+- Rocky helper chat with topic-based prepared answers (not a live AI integration).
+- Responsive layout for desktop and mobile screens.
 
-Meet **Rocky Raccoon**, our friendly mascot! Rocky guides students through lessons, answers questions, and encourages them as they learn, helping make emergency preparedness feel less intimidating and more engaging.
+## Prototype limitations
 
-**Our Goals**
+- Accounts and sign-in are not implemented; the learner is a demo profile.
+- Rocky's chat uses prepared topic-matched answers and does not call an AI model/API.
+- Progress is stored only in the current browser via `localStorage`.
+- This is an educational prototype, not authoritative emergency instruction. Before a public release, review all content against trusted emergency-management guidance and local school/family plans, with adult/educator review.
 
-- Make safety education engaging: Use interactive scenarios, guided activities, and rewards to encourage students to participate and retain what they learn.
-- Personalize learning with AI: Adapt explanations to different grade levels and provide encouraging feedback based on students' responses.
-- Build confidence through practice: Give students opportunities to apply their knowledge in age-appropriate, simulated emergency scenarios.
-- Support educators and families: Provide accessible learning materials that teachers and parents can use to reinforce emergency preparedness.
+## Suggested next steps
 
-**Planned Features**
-
-- Interactive Safety Scenarios: Explore earthquake and fire safety, fire drills, and shelter-in-place procedures through guided, educational activities.
-- AI-Powered Learning Assistant: Ask questions and receive clear, age-appropriate explanations with Rocky Raccoon as a friendly learning companion.
-- Personalized Practice Questions: Generate practice questions from verified safety information to reinforce key concepts.
-- Encouraging Feedback: Receive constructive, supportive feedback that helps students understand their mistakes and learn from them.
-- Rewards and Progression: Earn rewards for completing lessons and activities, motivating students to continue learning.
-- Teacher-Guided Activities: Give educators reusable learning materials to support classroom instruction and reinforce safety concepts.
-
-**How AI Fits In**
-
-AI is a central part of Safety Quest's learning experience. Rather than providing the same explanation to every student, the platform aims to tailor instruction to different reading levels and learning needs.
-
-**With the help of an AI language model, Safety Quest could:**
-
-- Explain safety concepts using language appropriate for different grade levels, from kindergarten through fifth grade.
-- Generate practice questions based on verified emergency preparedness information.
-- Provide personalized feedback and additional explanations when students struggle with a concept.
-- Help students explore safety topics through natural, conversational interactions with Rocky Raccoon.
-
-**Safety comes first.** AI-generated educational content should be grounded in reliable safety guidance and reviewed or constrained to avoid misleading instructions. Safety Quest is intended to supplement, not replace, guidance from teachers, parents, and emergency management professionals.
-
-**Proposed Tech Stack**
-
-- Frontend: HTML, CSS, JavaScript, and React
-- Backend: Node.js
-- AI Integration: An AI language model API
-- Safety Content: Verified emergency preparedness resources used to guide AI-generated explanations and activities
-
-**Future Possibilities**
-
-Although Safety Quest initially focuses on K–5 students, the long-term vision is to make emergency preparedness education accessible to a wider audience.
-
-**Potential future expansions include:**
-
-- Additional emergency topics, such as severe weather, floods, and other natural disasters.
-- Learning paths for middle school students, teenagers, and adults.
-- Expanded teacher tools and classroom learning resources.
-- More personalized learning experiences and additional interactive activities.
-
-Emergency preparedness is an important life skill at every age. By making safety education more approachable and accessible, Safety Quest aims to help more people build the knowledge and confidence they need to respond appropriately during emergencies.
-
-**Team**
-
-Team Rocky Raccoon — HackGlobal
-
-Tania Rivera (@taniaisabelarivera), 
-Sophia Beker (@sophiaBeker), 
-Valerie Guillen (@Val1066), 
-Fionna Reyes (@fionna-reyes)
+1. Ask a few students/educators to try the home page, one lesson, and Rocky's chat.
+2. Review the safety wording with an educator and reliable emergency-management sources.
+3. Add an optional backend and a constrained AI assistant grounded in reviewed content.
+4. Add real accounts and synced learner progress only after deciding how to protect children's data.

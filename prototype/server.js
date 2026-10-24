@@ -56,7 +56,13 @@ app.post("/api/chat", rateLimit, async (req, res) => {
 
     // Optional topic guardrail: off-topic questions receive a safe response without calling the model.
     const lower = message.toLowerCase();
-    if (!ALLOWED_TOPICS.some(topic => lower.includes(topic))) {
+    const recentHistory = Array.isArray(req.body?.history) ? req.body.history.slice(-6) : [];
+    const recentUserContext = recentHistory
+      .filter(m => m && m.role === "user" && typeof m.content === "string")
+      .map(m => m.content.toLowerCase().slice(0, 800))
+      .join(" ");
+    const hasSafetyContext = ALLOWED_TOPICS.some(topic => recentUserContext.includes(topic));
+    if (!ALLOWED_TOPICS.some(topic => lower.includes(topic)) && !hasSafetyContext) {
       return res.json({ reply: "That's a good question to bring to a trusted grown-up, Explorer. I can help with earthquake safety, fire safety, school drills, sheltering in place, emergency kits, and getting help. What would you like to learn about?" });
     }
 

@@ -89,6 +89,8 @@ app.post("/api/chat", rateLimit, async (req, res) => {
   }
 });
 
+require("./rocky-explain")(app, { openai, supabase, rateLimit });
+
 app.get("/api/health", (_req, res) => res.json({
   ok: true,
   aiConfigured: Boolean(openai),

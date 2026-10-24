@@ -95,4 +95,8 @@ function preparedAnswer(q){const t=q.toLowerCase();for(const x of prepared)if(x.
 async function askRocky(q){if(!CONFIG.aiEnabled)return preparedAnswer(q);try{const res=await fetch(CONFIG.chatEndpoint||'/api/chat',{method:'POST',headers:{'Content-Type':'application/json',...(session?.access_token?{Authorization:'Bearer '+session.access_token}:{})},body:JSON.stringify({message:q,history:chatHistory.slice(-10)})});if(!res.ok)throw new Error('Chat service returned '+res.status);const data=await res.json();if(!data.reply)throw new Error('Empty reply');return data.reply}catch(e){console.error(e);return 'I am having trouble connecting right now. Here is a prepared safety tip: stay with a trusted grown-up and follow your school or family emergency plan. You can try your question again in a moment.'}}
 document.getElementById('chatForm').addEventListener('submit',async e=>{e.preventDefault();const input=document.getElementById('chatInput'),q=input.value.trim();if(!q)return;const thread=document.getElementById('chatThread'),send=document.getElementById('chatSubmit');const u=document.createElement('div');u.className='chat-msg user';u.textContent=q;thread.appendChild(u);input.value='';input.disabled=true;send.disabled=true;const pending=document.createElement('div');pending.className='chat-msg';pending.textContent='Rocky is thinking…';thread.appendChild(pending);thread.scrollTop=thread.scrollHeight;const reply=await askRocky(q);pending.textContent=reply;input.disabled=false;send.disabled=false;input.focus();chatHistory.push({role:'user',content:q},{role:'assistant',content:reply});chatHistory=chatHistory.slice(-12);thread.scrollTop=thread.scrollHeight});
 initAuth();
-</script></body></html>
+</script>
+<script src="lessons-v2.js"></script>
+<script src="enhancements.js"></script>
+<script src="rocky-why.js"></script>
+</body></html>

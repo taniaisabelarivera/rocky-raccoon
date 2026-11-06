@@ -120,7 +120,7 @@
       // Use the original handler so the app keeps its existing feedback and scoring flow.
       wrongTry = false;
       hintVisible = false;
-      originalChooseAnswer(-1);
+      originalChooseAnswer(selectedAnswer);
     });
 
     actions.append(hintButton, revealButton);

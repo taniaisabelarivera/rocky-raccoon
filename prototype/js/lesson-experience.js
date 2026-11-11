@@ -24,8 +24,9 @@
   let score = 0;
   let wrongAttempts = 0;
   let firstAttemptCorrect = true;
-  let correctCounted = false;
   let completedThisRun = false;
+  let quizCountedThisRun = false;
+  let pointsEarnedThisRun = 0;
 
   const extraQuestions = {
     earthquake: [{

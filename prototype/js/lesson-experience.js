@@ -1,8 +1,8 @@
-/* 
+/*
  * Safety Quest — read-first lesson experience
  *
- * Load AFTER app.js, scripted-lessons.js, lessons-v2.js,
- * rocky-why.js, and enhancements.js.
+ * Load after app.js, scripted-lessons.js, and lessons-v2.js.
+ * This is the single active lesson and quiz renderer.
  */
 (() => {
   "use strict";

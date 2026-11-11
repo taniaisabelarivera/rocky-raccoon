@@ -536,44 +536,6 @@
     }))
   );
 
-  // Add a trusted-adult reminder to the lesson completion screen.
-  const originalRenderLesson = window.renderLesson;
-
-  window.renderLesson = function renderScriptedLesson() {
-    originalRenderLesson();
-
-    try {
-      const lesson = lessonData[activeLesson];
-
-      if (!lesson || sectionIndex < lesson.sections.length) return;
-
-      const finish = document.querySelector("#lessonContent .finish");
-
-      if (!finish || finish.querySelector(".scripted-grownup")) return;
-
-      const note = document.createElement("div");
-      note.className = "notice scripted-grownup";
-      note.style.maxWidth = "560px";
-      note.style.margin = "18px auto";
-      note.style.textAlign = "left";
-
-      const heading = document.createElement("strong");
-      heading.textContent = "🧑‍🧑‍🧒 Practice with a trusted grown-up";
-
-      const copy = document.createElement("p");
-      copy.textContent = lesson.grownUps;
-      copy.style.margin = "6px 0 0";
-
-      note.append(heading, copy);
-
-      const finishButton = finish.querySelector("button");
-      finish.insertBefore(note, finishButton || null);
-
-    } catch (error) {
-      console.warn("Could not add grown-up note:", error);
-    }
-  };
-
   // Preserve the existing guest-access restriction.
   const originalOpenLesson = window.openLesson;
 

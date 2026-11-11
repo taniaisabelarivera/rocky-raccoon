@@ -536,22 +536,6 @@
     }))
   );
 
-  // Preserve the existing guest-access restriction.
-  const originalOpenLesson = window.openLesson;
-
-  window.openLesson = function openScriptedLesson(id) {
-    if ((id === "flood" || id === "blackout") && !user) {
-      const proceed = confirm(
-        "Guest mode is available for the Earthquake Ready lesson. Create an account to unlock the full lesson library. Open account options?"
-      );
-
-      if (proceed) showPage("account");
-      return;
-    }
-
-    return originalOpenLesson(id);
-  };
-
   if (typeof renderModules === "function") {
     renderModules();
   }

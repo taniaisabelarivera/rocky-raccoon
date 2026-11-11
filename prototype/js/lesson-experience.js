@@ -232,9 +232,10 @@
       selectedIndex = null;
       checked = false;
       score = 0;
+      quizCountedThisRun = false;
+      pointsEarnedThisRun = 0;
       wrongAttempts = 0;
       firstAttemptCorrect = true;
-      correctCounted = false;
       mode = "quiz";
       renderLesson();
     });
@@ -316,8 +317,11 @@
       if (!checked) {
         checked = true;
         if (selectedIndex === question.correct) {
-          if (firstAttemptCorrect) score++;
-          progress.points = (progress.points || 0) + (firstAttemptCorrect ? 5 : 0);
+          if (firstAttemptCorrect) {
+            score++;
+            progress.points = (progress.points || 0) + 5;
+            pointsEarnedThisRun += 5;
+          }
         } else {
           wrongAttempts++;
           firstAttemptCorrect = false;
@@ -334,7 +338,6 @@
         checked = false;
         wrongAttempts = 0;
         firstAttemptCorrect = true;
-        correctCounted = false;
         renderLesson();
       } else {
         mode = "finish";
@@ -355,17 +358,26 @@
         ? "Great effort! You remembered lots of important safety ideas."
         : "Nice work finishing! You can review the lesson and try the quiz again.";
 
+    if (!quizCountedThisRun) {
+      progress.quizzes = (progress.quizzes || 0) + 1;
+      quizCountedThisRun = true;
+    }
+
     if (!completedThisRun) {
       const alreadyCompleted = progress.completed.includes(activeLesson);
+    
       if (!alreadyCompleted) {
         progress.completed.push(activeLesson);
         progress.points = (progress.points || 0) + 20;
+        pointsEarnedThisRun += 20;
       }
+    
       completedThisRun = true;
-      if (typeof persist === "function") persist();
-      if (typeof updateStats === "function") updateStats();
-      if (typeof renderModules === "function") renderModules();
     }
+    
+    if (typeof persist === "function") persist();
+    if (typeof updateStats === "function") updateStats();
+    if (typeof renderModules === "function") renderModules();
 
     content.innerHTML = `
       <section class="lesson-panel finish sq-finish">
@@ -375,7 +387,7 @@
         <p>${escapeHTML(passedMessage)}</p>
         <div class="sq-score">${score} / ${total}</div>
         <p class="sq-score-label">quiz answers correct</p>
-        <div class="notice success">⭐ You earned ${20 + score * 5} possible quest points for this lesson run!</div>
+        <div class="notice success"> ⭐ You earned ${pointsEarnedThisRun} quest points this time!</div>
         <p>Remember: practice your family or school safety plan with a trusted grown-up.</p>
         <div class="lesson-actions sq-finish-actions">
           <button class="secondary" type="button" id="sqReview">Review lesson</button>
@@ -390,7 +402,7 @@
     document.getElementById("sqLessons").addEventListener("click", () => showPage("explore"));
     document.getElementById("sqRetry").addEventListener("click", () => {
       quizIndex = 0; selectedIndex = null; checked = false; score = 0;
-      wrongAttempts = 0; firstAttemptCorrect = true;
+      wrongAttempts = 0; firstAttemptCorrect = true; quizCountedThisRun = false; pointsEarnedThisRun = 0;
       quizQuestions = makeQuiz(data); mode = "quiz"; renderLesson();
     });
   }

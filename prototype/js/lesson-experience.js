@@ -1,11 +1,8 @@
-/*
+/* 
  * Safety Quest — read-first lesson experience
  *
  * Load AFTER app.js, scripted-lessons.js, lessons-v2.js,
  * rocky-why.js, and enhancements.js.
- *
- * Reading sections no longer interrupt the learner with questions.
- * The existing section questions are collected into a quiz at the end.
  */
 (() => {
   "use strict";
@@ -25,6 +22,8 @@
   let selectedIndex = null;
   let checked = false;
   let score = 0;
+  let wrongAttempts = 0;
+  let firstAttemptCorrect = true;
   let correctCounted = false;
   let completedThisRun = false;
 
@@ -66,6 +65,42 @@
     return `<p>${escapeHTML(body || "")}</p>`;
   }
 
+  // Specific explanations for common incorrect choices.
+  const wrongAnswerExplanations = {
+    "You are in class and the floor starts to shake. What is your first move?": {
+      0: "Running for the door while the ground is shaking can make you fall or put you near falling objects. Drop where you are, cover your head and neck, and hold on.",
+      2: "A doorway is not a special safe spot in a modern classroom. You may still be hurt by falling objects. Drop, Cover, and Hold On instead."
+    },
+    "It is the middle of the night and the shaking wakes you up. What should you do?": {
+      1: "Jumping up and running outside during the shaking is dangerous. You could trip in the dark or be hit by things falling from shelves. Stay in bed and cover your head and neck with a pillow.",
+      2: "Looking for the light switch means moving around while it is dark and things may be falling. Stay in bed, protect your head and neck with a pillow, and wait for the shaking to stop."
+    },
+    "You are on the playground when the ground starts to shake. Where is the safest place?": {
+      0: "A wall can shed bricks, glass, or other pieces during shaking. Move to an open space away from buildings, trees, and wires, then protect your head and neck.",
+      1: "Branches can break and fall during an earthquake. Move to an open space away from trees, buildings, and wires."
+    },
+    "The big shaking stopped, and then you feel a smaller shake. What do you do?": {
+      0: "Smaller aftershocks can happen after the first earthquake. Protect yourself every time you feel shaking: Drop, Cover, and Hold On.",
+      1: "Looking at damage while things may still be moving can put you near falling objects. Drop, Cover, and Hold On again, and wait for a trusted adult's instructions."
+    },
+    "You find a lighter on the floor. What do you do?": {
+      0: "Picking up or hiding a lighter means handling something that can start a fire. Leave it where it is, move away, and tell a grown-up.",
+      1: "Testing a lighter can start a fire or burn you. Never play with matches or lighters. Move away and tell a grown-up."
+    },
+    "The smoke alarm is beeping and you see smoke in the hallway. How should you move?": {
+      1: "Standing tall puts your face in thicker smoke, which can make it hard to breathe. Get low and go to your practiced exit.",
+      2: "Going back into a room instead of leaving can trap you in danger. Follow your fire escape plan and get outside. If your exit is blocked, follow the plan you practiced with a grown-up."
+    },
+    "A firefighter in a big mask and heavy coat walks toward you. What do you do?": {
+      0: "Hiding makes it harder for firefighters to find and help you. Firefighters wear protective gear to keep themselves safe. Go to them when they reach you.",
+      2: "A closet is not a safe place to hide during a fire. Helpers need to be able to find you. Go to the firefighter."
+    },
+    "You got outside safely, but your favorite stuffed animal is still in your room. What now?": {
+      0: "Going back inside is dangerous because fire and smoke can spread quickly. Stay outside at your meeting place and tell a grown-up or firefighter.",
+      1: "Even a small-looking fire can spread or hide dangerous smoke. Never go back inside after escaping. Stay outside and tell a grown-up or firefighter."
+    }
+  };
+
   function makeQuiz(data) {
     const questions = (data.sections || [])
       .filter(section => Array.isArray(section.answers) &&
@@ -75,7 +110,8 @@
         question: section.q || `What is important to remember about "${section.title}"?`,
         answers: section.answers.slice(),
         correct: section.correct,
-        why: section.why || "Great effort! Remember to follow your trusted adult's safety instructions."
+        why: section.why || "Remember to follow your trusted adult's safety instructions.",
+        wrongWhy: wrongAnswerExplanations[section.q] || {}
       }));
 
     (extraQuestions[activeLesson] || []).forEach(question => questions.push(question));
@@ -195,6 +231,8 @@
       selectedIndex = null;
       checked = false;
       score = 0;
+      wrongAttempts = 0;
+      firstAttemptCorrect = true;
       correctCounted = false;
       mode = "quiz";
       renderLesson();
@@ -215,17 +253,37 @@
       let state = "";
       if (checked && index === question.correct) state = "correct";
       else if (checked && index === selectedIndex) state = "wrong";
-      return `<button type="button" class="quiz-option ${state}" data-answer="${index}" ${checked ? "disabled" : ""}>
+      const disabled = checked ? "disabled" : "";
+      return `<button type="button" class="quiz-option ${state}" data-answer="${index}" ${disabled}>
         <span class="sq-answer-letter">${String.fromCharCode(65 + index)}.</span> ${escapeHTML(answer)}
       </button>`;
     }).join("");
 
-    const feedback = checked
-      ? `<div class="feedback sq-quiz-feedback" role="status" aria-live="polite">
-          ${selectedIndex === question.correct ? "✅ Correct! " : "💡 Good try! "}
-          ${escapeHTML(question.why)}
-        </div>`
-      : `<p class="sq-quiz-prompt">Choose the answer you think is safest.</p>`;
+    let feedback = `<p class="sq-quiz-prompt">Choose the answer you think is safest.</p>`;
+    if (checked && selectedIndex === question.correct) {
+      feedback = `<div class="feedback sq-quiz-feedback sq-feedback-correct" role="status" aria-live="polite">
+        <strong>🌟 That's right!</strong>
+        <p>${escapeHTML(question.why)}</p>
+        ${wrongAttempts > 0 ? `<p>You learned from your first try and got it! Keep that safety tip in mind.</p>` : ""}
+      </div>`;
+    } else if (checked) {
+      const specific = question.wrongWhy && question.wrongWhy[selectedIndex];
+      const chosen = question.answers[selectedIndex];
+      const correct = question.answers[question.correct];
+      feedback = `<div class="feedback sq-quiz-feedback sq-feedback-wrong" role="status" aria-live="polite">
+        <strong>💡 Let's learn from that choice.</strong>
+        <p><strong>You chose:</strong> ${escapeHTML(chosen)}.</p>
+        <p>${escapeHTML(specific || `That choice is not the safest action for this situation. The safer choice is “${correct}.” ${question.why}`)}</p>
+        <p><strong>Remember:</strong> ${escapeHTML(question.why)}</p>
+        <p>${wrongAttempts === 1 ? "Read the explanation, then try the question one more time." : "You've had another try. Read the safety tip carefully before continuing."}</p>
+      </div>`;
+    }
+
+    const actionLabel = !checked
+      ? "Check answer"
+      : (selectedIndex !== question.correct && wrongAttempts === 1)
+        ? "Try again"
+        : (quizIndex === quizQuestions.length - 1 ? "See my results →" : "Next question →");
 
     content.innerHTML = `
       ${renderHeader(data, "KNOWLEDGE CHECK", quizQuestions.length, quizIndex + 1)}
@@ -237,7 +295,7 @@
         <div class="lesson-actions">
           <button class="secondary" type="button" id="sqQuitQuiz">Exit lesson</button>
           <button class="btn" type="button" id="sqQuizAction" ${!checked && selectedIndex === null ? "disabled" : ""}>
-            ${checked ? (quizIndex === quizQuestions.length - 1 ? "See my results →" : "Next question →") : "Check answer"}
+            ${actionLabel}
           </button>
         </div>
       </section>`;
@@ -256,22 +314,30 @@
     document.getElementById("sqQuizAction").addEventListener("click", () => {
       if (!checked) {
         checked = true;
-        progress.quizzes = (progress.quizzes || 0) + 1;
         if (selectedIndex === question.correct) {
-          score++;
-          progress.points = (progress.points || 0) + 5;
-          correctCounted = true;
+          if (firstAttemptCorrect) score++;
+          progress.points = (progress.points || 0) + (firstAttemptCorrect ? 5 : 0);
+        } else {
+          wrongAttempts++;
+          firstAttemptCorrect = false;
         }
-        if (typeof persist === "function") persist();
+        renderLesson();
+      } else if (selectedIndex !== question.correct && wrongAttempts === 1) {
+        // The first incorrect attempt triggers a teaching explanation and one retry.
+        checked = false;
+        selectedIndex = null;
         renderLesson();
       } else if (quizIndex < quizQuestions.length - 1) {
         quizIndex++;
         selectedIndex = null;
         checked = false;
+        wrongAttempts = 0;
+        firstAttemptCorrect = true;
         correctCounted = false;
         renderLesson();
       } else {
         mode = "finish";
+        if (typeof persist === "function") persist();
         renderLesson();
       }
     });
@@ -323,6 +389,7 @@
     document.getElementById("sqLessons").addEventListener("click", () => showPage("explore"));
     document.getElementById("sqRetry").addEventListener("click", () => {
       quizIndex = 0; selectedIndex = null; checked = false; score = 0;
+      wrongAttempts = 0; firstAttemptCorrect = true;
       quizQuestions = makeQuiz(data); mode = "quiz"; renderLesson();
     });
   }
